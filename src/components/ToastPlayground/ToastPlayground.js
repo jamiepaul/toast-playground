@@ -1,12 +1,33 @@
 import React from 'react';
 
 import Button from '../Button';
+import Toast from '../Toast';
 
 import styles from './ToastPlayground.module.css';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
 function ToastPlayground() {
+  const [message, setMessage] = React.useState('');
+  const [variant, setVariant] = React.useState('');
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    // console.log({ message });
+    // console.log({ variant });
+
+    setIsOpen(true);
+
+    // clear inputs
+    // setMessage('');
+    // setVariant('');
+  }
+
+  function handleDismiss() {
+    setIsOpen(false);
+  }
+
   return (
     <div className={styles.wrapper}>
       <header>
@@ -14,7 +35,11 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      <div className={styles.controlsWrapper}>
+      {isOpen && (
+        <Toast variant={variant} handleDismiss={handleDismiss}>{message}</Toast>
+      )}
+
+      <form className={styles.controlsWrapper} onSubmit={handleSubmit}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -24,27 +49,37 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} />
+            <textarea
+              id="message"
+              className={styles.messageInput}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
         </div>
 
         <div className={styles.row}>
           <div className={styles.label}>Variant</div>
-          <div
-            className={`${styles.inputWrapper} ${styles.radioWrapper}`}
-          >
-            <label htmlFor="variant-notice">
-              <input
-                id="variant-notice"
-                type="radio"
-                name="variant"
-                value="notice"
-              />
-              notice
-            </label>
+          {VARIANT_OPTIONS.map((radio) => {
+            const id = `variant-${radio}`;
 
-            {/* TODO Other Variant radio buttons here */}
-          </div>
+            return (
+              <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
+              <label htmlFor={id}>
+                <input
+                  key={crypto.randomUUID()}
+                  id={id}
+                  type="radio"
+                  name="variant"
+                  value={radio}
+                  checked={variant === radio}
+                  onChange={(e) => setVariant(e.target.value)}
+                />
+                {radio}
+              </label>
+            </div>
+            );
+          })}
         </div>
 
         <div className={styles.row}>
@@ -55,7 +90,7 @@ function ToastPlayground() {
             <Button>Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
